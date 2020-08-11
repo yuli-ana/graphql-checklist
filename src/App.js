@@ -18,9 +18,22 @@ query getQuery {
 
 function App() {
   const { data, loading } = useQuery(GET_TODOS);
-  console.log(data, loading);
+  console.log(data);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+
   return (
-    <div>app</div>
+    <ul>
+      {data.todos.map(todo => (
+        <>
+          <li key={todo.id}>{todo.text}</li>
+          <button>&times;</button>
+        </>
+      ))}
+    </ul>
   );
 }
 
