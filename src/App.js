@@ -44,11 +44,17 @@ const ADD_TODO = gql`
 // delete todos
 // list todos
 
+
+
 function App() {
   const [todoText, setTodoText] = useState('');
   const { data, loading, error } = useQuery(GET_TODOS);
   const [toggleTodo] = useMutation(TOGGLE_TODO);
-  const [addTodo] = useMutation(ADD_TODO);
+  // useMutation takes 2 argument callback 
+  const [addTodo] = useMutation(ADD_TODO, {
+    onCompleted: () => setTodoText(''),
+  });
+  // When using useMutation hook we can run some code after mutation is completed
 
 
 
@@ -60,14 +66,17 @@ function App() {
   async function handleAddTodo(e) {
     e.preventDefault();
     if (!todoText.trim()) return;
-    const data = await addTodo({ 
+    // Apollo caches info. Add 2nd property refetchQueries to see UI updates immediately
+    const data = await addTodo({
       variables: { text: todoText },
+      // Immediately refetch the query after performing mutation so a new created todo immediately show to the user
       refetchQueries: [
-        {query: GET_TODOS }
+        { query: GET_TODOS }
       ]
-     })
+    })
     console.log("added todo", data);
-    setTodoText('');
+    // Instead of running setTodoText here we can run it in onCompleted callback
+    // setTodoText('');
   }
 
   function handleInputChange(e) {
