@@ -40,8 +40,11 @@ function App() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error fetching todos...</div>;
 
-  function handleToggleTodo(todo) {
-    console.log(toggleTodo({ variables: { id: todo.id, done: !todo.done } }));
+  async function handleToggleTodo({ id, done }) {
+    const data = await toggleTodo({ variables: { id, done: !done, } });
+    console.log(data);
+
+
   }
 
   return (
@@ -56,7 +59,7 @@ function App() {
       <div className="flex items-center justify-center flex-column">
         {data.todos.map(todo => (
           <p onDoubleClick={() => handleToggleTodo(todo)} key={todo.id} >
-            <span className="pointer list pa1 f3" style={{ listStyle: 'none' }}>{todo.text}</span>
+            <span className={`pointer list pa1 f3" ${todo.done && "strike" }`} style={{ listStyle: 'none' }}>{todo.text}</span>
             <button className="bg-transparent bn f4">
               <span className="red">
                 &times;
