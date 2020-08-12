@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery, gql, useMutation } from '@apollo/client';
 
 
 // Most commonly we write a query within variable
@@ -14,6 +14,18 @@ query getQuery {
     }
     `;
 
+const TOGGLE_TODO = gql`
+    mutation ToggleTodo($id:uuid, $done: Boolean!) {
+      update_todos(where: {id: {_eq: $id }}, _set: {done: $done}) {
+        returning {
+          done
+          id
+          text
+        }
+      }
+    }
+    `;
+
 // add todos
 // toggle todos
 // delete todos
@@ -21,11 +33,16 @@ query getQuery {
 
 function App() {
   const { data, loading, error } = useQuery(GET_TODOS);
-  console.log(data);
+  const [toggleTodo] = useMutation(TOGGLE_TODO);
+
+  // Before executing mutation run it in hasura console first
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error fetching todos...</div>;
 
+  function handleToggleTodo(todo) {
+    console.log(toggleTodo({ variables: { id: todo.id, done: !todo.done } }));
+  }
 
   return (
     <div className="vh-100 code flex flex-column items-center bg-purple white pa4 fl-1">
@@ -38,7 +55,7 @@ function App() {
       {/* Todo list  */}
       <div className="flex items-center justify-center flex-column">
         {data.todos.map(todo => (
-          <p key={todo.id} >
+          <p onDoubleClick={() => handleToggleTodo(todo)} key={todo.id} >
             <span className="pointer list pa1 f3" style={{ listStyle: 'none' }}>{todo.text}</span>
             <button className="bg-transparent bn f4">
               <span className="red">
