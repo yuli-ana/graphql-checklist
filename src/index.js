@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 
 // import { ApolloClient, gql, InMemoryCache } from '@apollo/client';
+// ApolloClient is the default import not in {} braces
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 
 const client = new ApolloClient({
